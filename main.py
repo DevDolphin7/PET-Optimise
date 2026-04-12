@@ -1,6 +1,5 @@
 import pandas as pd
 
-test_data = [["Beaford"], ["Bridgerule"], ["Bradworthy"]]
+df = pd.read_csv("test_data.csv")
 
-df = pd.DataFrame(test_data, columns=["Product Name"])
-print(df)
+print(df.head())
