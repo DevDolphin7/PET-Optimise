@@ -48,11 +48,12 @@ desired_columns = map(
 
 
 class PetOptimiser:
-    def __init__(self):
+    def __init__(self) -> None:
         self.data = self.get_clean_data()
 
     def get_clean_data(self) -> pd.DataFrame:
         df: pd.DataFrame = pd.read_csv("test_data.csv")
+
         return self.clean_data(df)
 
     def clean_data(self, df) -> pd.DataFrame:
