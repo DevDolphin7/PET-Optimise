@@ -46,13 +46,26 @@ desired_columns = map(
     ],
 )
 
-df = pd.read_csv("test_data.csv")
 
-df.columns = df.columns.str.strip().str.lower().str.replace(" ", "_")
+class PetOptimiser:
+    def __init__(self):
+        self.data = self.get_clean_data()
 
-df = df[desired_columns]
+    def get_clean_data(self) -> pd.DataFrame:
+        df: pd.DataFrame = pd.read_csv("test_data.csv")
+        return self.clean_data(df)
 
-df = df.dropna(subset=["house_type_code"])
-df = df[~df["product_name"].str.startswith("#", na=False)]
+    def clean_data(self, df) -> pd.DataFrame:
+        df.columns = df.columns.str.strip().str.lower().str.replace(" ", "_")
 
-print(df.head())
+        df = df[desired_columns]
+
+        df = df.dropna(subset=["house_type_code"])
+
+        return df[~df["product_name"].str.startswith("#", na=False)]
+
+    def show_data(self):
+        return self.data.head()
+
+
+print(PetOptimiser().show_data())
