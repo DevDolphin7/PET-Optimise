@@ -16,14 +16,24 @@ class PetOptimiser:
     def define_inputs(self):
         return {
             "site efficiency": (
-                "__test__/test_data.csv" if self.devMode else "range TBC"
+                "__test__/test_data.csv"
+                if self.devMode
+                else xl("Site_efficiency", headers=True)
             ),
-            "house types": "__test__/ht_data.csv" if self.devMode else "range TBC",
+            "house types": (
+                "__test__/ht_data.csv"
+                if self.devMode
+                else xl("House_Type_Database", headers=True)
+            ),
             "plotting formats": (
-                "__test__/plotting_vars.csv" if self.devMode else "range TBC"
+                "__test__/plotting_vars.csv"
+                if self.devMode
+                else xl("plotting_format", headers=True)
             ),
             "parking formats": (
-                "__test__/parking_vars.csv" if self.devMode else "range TBC"
+                "__test__/parking_vars.csv"
+                if self.devMode
+                else xl("Parking_format", headers=True)
             ),
         }
 
@@ -47,11 +57,16 @@ class PetOptimiser:
         )
 
     def get_clean_data(self, source) -> pd.DataFrame:
-        df: pd.DataFrame = pd.read_csv(self.inputs[source])
+        print(source, "<<<<<<", sep="")
+        df: pd.DataFrame = (
+            pd.read_csv(self.inputs[source]) if self.devMode else self.inputs[source]
+        )
 
         return self.clean_data(df, source)
 
     def clean_data(self, df: pd.DataFrame, source: str) -> pd.DataFrame:
+        if not self.devMode:
+            df = df.convert_dtypes()
         df.columns = df.columns.str.strip().str.lower().str.replace(" ", "_")
 
         if source == "site efficiency":
@@ -75,7 +90,7 @@ class PetOptimiser:
         return self.parking_formats.head()
 
 
-PetOptimiser = PetOptimiser(devMode=True)
+PetOptimiser = PetOptimiser(devMode=False)
 
 print(PetOptimiser.show_site_efficiency())
 print(PetOptimiser.show_house_types())
