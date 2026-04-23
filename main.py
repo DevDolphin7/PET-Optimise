@@ -1,17 +1,16 @@
 import pandas as pd
 
 
-class PetOptimiser:
+class PetDataPrep:
+    """Get clean data from the Plotting Efficiency Tool"""
+
     def __init__(self, devMode=False) -> None:
         self.devMode = devMode
 
         self.inputs = self.define_inputs()
         self.site_efficiency_columns = self.define_site_efficiency_columns()
 
-        self.site_efficiency = self.get_clean_data("site efficiency")
-        self.house_types = self.get_clean_data("house types")
-        self.plotting_formats = self.get_clean_data("plotting formats")
-        self.parking_formats = self.get_clean_data("parking formats")
+        self.outputs = {}
 
     def define_inputs(self):
         return {
@@ -57,7 +56,6 @@ class PetOptimiser:
         )
 
     def get_clean_data(self, source) -> pd.DataFrame:
-        print(source, "<<<<<<", sep="")
         df: pd.DataFrame = (
             pd.read_csv(self.inputs[source]) if self.devMode else self.inputs[source]
         )
@@ -78,7 +76,7 @@ class PetOptimiser:
         return df
 
     def show_site_efficiency(self):
-        return self.site_efficiency.head()
+        return self.outputs["site_efficiency"].head()
 
     def show_house_types(self):
         return self.house_types.head()
@@ -89,10 +87,25 @@ class PetOptimiser:
     def show_parking_formats(self):
         return self.parking_formats.head()
 
+    def build(self):
+        for input in self.inputs.keys():
+            self.outputs[input] = self.get_clean_data(input)
 
-PetOptimiser = PetOptimiser(devMode=False)
+        return self.outputs
 
-print(PetOptimiser.show_site_efficiency())
-print(PetOptimiser.show_house_types())
-print(PetOptimiser.show_plotting_formats())
-print(PetOptimiser.show_parking_formats())
+
+class PetOptimise:
+    """Optimisation algoritm for the Plotting Efficiency Tool"""
+
+    def __init__(self, pet_data):
+        self.pet_data = pet_data
+
+    def show(self):
+        print(self.pet_data)
+
+
+pet_data = PetDataPrep(devMode=True).build()
+
+PetOptimise = PetOptimise(pet_data)
+
+PetOptimise.show()
