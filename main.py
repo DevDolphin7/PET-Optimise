@@ -12,7 +12,7 @@ class PetDataPrep:
 
         self.outputs = {}
 
-    def define_inputs(self):
+    def define_inputs(self) -> dict[str, str | pd.DataFrame]:
         return {
             "site efficiency": (
                 "__test__/test_data.csv"
@@ -36,7 +36,7 @@ class PetDataPrep:
             ),
         }
 
-    def define_site_efficiency_columns(self):
+    def define_site_efficiency_columns(self) -> list[str]:
         return map(
             lambda column_name: column_name.strip().lower().replace(" ", "_"),
             [
@@ -75,36 +75,46 @@ class PetDataPrep:
 
         return df
 
-    def show_site_efficiency(self):
-        return self.outputs["site_efficiency"].head()
+    def show_site_efficiency(self) -> pd.DataFrame:
+        return self.outputs["site efficiency"].head()
 
-    def show_house_types(self):
-        return self.house_types.head()
+    def show_house_types(self) -> pd.DataFrame:
+        return self.outputs["house types"].head()
 
-    def show_plotting_formats(self):
-        return self.plotting_formats.head()
+    def show_plotting_formats(self) -> pd.DataFrame:
+        return self.outputs["plotting formats"].head()
 
-    def show_parking_formats(self):
-        return self.parking_formats.head()
+    def show_parking_formats(self) -> pd.DataFrame:
+        return self.outputs["parking formats"].head()
 
-    def build(self):
+    def build_sources(self) -> dict[str, pd.DataFrame]:
         for input in self.inputs.keys():
             self.outputs[input] = self.get_clean_data(input)
 
         return self.outputs
 
+    def build_dataframe(self) -> pd.DataFrame:
+        sources = self.outputs if len(self.outputs) > 0 else self.build_sources()
+
+        df = sources["site efficiency"]
+        df = df.merge(sources["house types"], on="product_name", how="left")
+        df = df.merge(sources["plotting formats"], on="plotting_format", how="left")
+        df = df.merge(sources["parking formats"], on="parking_format", how="left")
+
+        return df
+
 
 class PetOptimise:
     """Optimisation algoritm for the Plotting Efficiency Tool"""
 
-    def __init__(self, pet_data):
+    def __init__(self, pet_data) -> None:
         self.pet_data = pet_data
 
     def show(self):
         print(self.pet_data)
 
 
-pet_data = PetDataPrep(devMode=True).build()
+pet_data = PetDataPrep(devMode=True).build_dataframe()
 
 PetOptimise = PetOptimise(pet_data)
 
